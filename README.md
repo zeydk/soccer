@@ -3,8 +3,6 @@ This project explores patterns and probabilities in Turkish club-to-club soccer 
 1. **Complete Transfer Network**
 2. **Path-Dependent Destination Forecasting**
 
----
-
 ## 1. Transfer Network Analysis
 
 **Goal:** Understand the overall structure of transfers between clubs, including both fee-based moves and free transfers.
@@ -18,7 +16,6 @@ This project explores patterns and probabilities in Turkish club-to-club soccer 
 
 **Outcome:** A force-directed, interactive network diagram reveals which clubs act as major buyers, which act as sellers, and how the Turkish transfer ecosystem is organized into clusters or communities. Free transfers are included to show the complete flow of players, regardless of fee.
 
----
 
 ## 2. Absorption-Based Probability Model
 
