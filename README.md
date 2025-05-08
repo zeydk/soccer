@@ -1,57 +1,81 @@
 # Project Overview
 
-This project explores patterns and probabilities in Turkish club-to-club soccer transfers through two complementary analyses:
+This project analyzes Turkish club-to-club soccer transfers with two complementary perspectives:
 
-1. **Complete Transfer Network**
-2. **Path-Dependent Destination Forecasting**
+1. **Complete Transfer Network** — Visualize the full web of player moves, including free transfers.
+2. **Path-Dependent Destination Forecasting** — Compute the probability a player’s career will eventually land at a top‐spending club.
 
 ---
 
 ## 1. Transfer Network Analysis
 
-**Goal:** Understand the full flow of players among Turkish clubs, incorporating both fee-based and free moves.
+**Goal:** Reveal how all Turkish clubs exchange players, highlighting major buyers and sellers.
 
-**Key steps:**
+**How it works:**
 
-* Model each club as a node in a directed graph.
-* Draw arrows (edges) for every transfer from one club to another, aggregating multiple moves into thicker arrows.
-* Size and color nodes by total money spent on incoming transfers to highlight major buyers.
+* **Clubs as nodes:** Every team is a point in the graph.
+* **Transfers as arrows:** An arrow from A to B means players moved from A to B; arrows thicken with more moves.
+* **Include free moves:** Transfers with zero fees are still shown, giving the complete picture.
+* **Visual cues:** Node size and color scale with total fees spent on incoming players.
 
-**Outcome:** An interactive, force-directed visualization that reveals which clubs function as central buyers, which supply talent, and how the overall ecosystem clusters.
+**Result:** An interactive, force‐directed map showing which clubs are central in spending and which cluster together.
 
-
+---
 
 ## 2. Path-Dependent Destination Forecasting
 
-**Goal:** Calculate the long-run probability that a player starting at any club will eventually sign for one of the elite “core” clubs.
+**Goal:** For any club, estimate the long‐term chance that players will end their careers at each of the elite “core” clubs.
 
-### Conceptual Logic
+### Conceptual Steps
 
-1. **Next-step behavior:** A player at Club A moves to Club B with probability proportional to how often A→B transfers occurred historically.
-2. **Core clubs as final stops:** Identify the top spenders (by total fees paid) and assume once a player reaches one, they remain there in our model.
-3. **Multi-step absorption:** A player may pass through several intermediate clubs before reaching a core.
+1. **Next‐move rates:** Measure how often players move directly from Club A to Club B, normalized into a probability of the next transfer.
+2. **Core clubs as endpoints:** Identify top spenders (by total fees paid); once a player joins one, we treat that as a final stop.
+3. **Multi‐step journeys:** Players often move through several clubs before reaching a core, so we account for all potential paths.
 
-### Method Outline
+### Mathematical Outline
 
-1. **One-step probabilities:** For each club, compute the fraction of its outgoing transfers that went to every other club.
+1. **One‐step probabilities**
+   For each pair (A, B), compute:
 
-   $p_{A\to B} = \frac{\#(A\to B)}{\sum_X \#(A\to X)}.$
-2. **Organize states:** Split clubs into:
+   $$
+     P_{A\to B} = \frac{n(A\to B)}{\sum_{C}\,n(A\to C)},
+   $$
 
-   * **Transient** (all but the cores)
-   * **Absorbing** (the core clubs)
-3. **Matrix form:** Let
+   where $n(A\to B)$ is the historical count of transfers from A to B.
 
-   * **Q** = transient→transient probabilities
-   * **R** = transient→core probabilities
-4. **Sum over all paths:** The chance of eventually landing in core club K starting from transient club T equals
-   $B_{T\to K} = R_{T\to K} + (Q\,R)_{T\to K} + (Q^2R)_{T\to K} + \cdots.$
-5. **Closed-form solution:** This infinite sum converges to
-   $B = (I - Q)^{-1} R,$
-   where $(I - Q)^{-1} = I + Q + Q^2 + \cdots$.
+2. **Partition states**
 
-**Result:** A table of probabilities (rows = starting clubs, columns = core clubs) showing the likelihood each club serves as a final destination.
+   * **Transient clubs:** All but the chosen core teams.
+   * **Absorbing (core) clubs:** Top spenders—if reached, the process stops.
 
+3. **Matrix form**
+   Organize the probability matrix into:
 
+   $$
+     P = \begin{pmatrix} Q & R \\ 0 & I \end{pmatrix},
+   $$
 
+   where:
 
+   * **Q** = transient→transient block.
+   * **R** = transient→absorbing block.
+
+4. **Absorption via infinite sum**
+   A player might wander through transient clubs multiple times before absorption.  The exact probability of ending at core K starting from transient T is:
+
+   $$
+     B_{T\to K} = R_{T\to K} + (Q R)_{T\to K} + (Q^2 R)_{T\to K} + \cdots.
+   $$
+
+5. **Closed‐form solution**
+   The series converges to a finite matrix product:
+
+   $$
+     B = (I - Q)^{-1} \, R,
+   $$
+
+   where the **fundamental matrix** $N = (I-Q)^{-1} = I + Q + Q^2 + \cdots$ efficiently sums all possible paths.
+
+**Result:** A clear table: each starting (transient) club has a probability distribution over core clubs, indicating where players are most likely to end up.
+
+---
